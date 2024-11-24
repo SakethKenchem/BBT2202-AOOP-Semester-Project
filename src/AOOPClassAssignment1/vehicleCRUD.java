@@ -1,8 +1,8 @@
 package AOOPClassAssignment1;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class vehicleCRUD extends databaseConnection {
 
@@ -10,129 +10,168 @@ public class vehicleCRUD extends databaseConnection {
         super();
     }
 
-    public void selectOperation() {
-        try {
-            String query = "SELECT * FROM vehicles";
-            PreparedStatement pst = con.prepareStatement(query);
-            ResultSet rs = pst.executeQuery();
-            
-            
+    
+    public List<Vehicle> selectOperation() {
+        List<Vehicle> vehicles = new ArrayList<>();
+        String[] tables = {"trucks", "motorcycles", "tractors"};
 
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String type = rs.getString("type");
-                int weight = rs.getInt("weight");
-                String color = rs.getString("color");
-                String model = rs.getString("model");
-                String make = rs.getString("make");
-                int engineCapacity = rs.getInt("engine_capacity");
-                String owner = rs.getString("owner");
-                int mileage = rs.getInt("mileage");
-                System.out.println(String.format("ID: %d, Type: %s, Weight: %d, Color: %s, Model: %s, Make: %s, Engine Capacity: %d, Owner: %s, Mileage: %d", id, type, weight, color, model, make, engineCapacity, owner, mileage));
+        for (String table : tables) {
+            String query = "SELECT * FROM " + table;
+            try (Statement stmt = con.createStatement();
+                 ResultSet rs = stmt.executeQuery(query)) {
+                while (rs.next()) {
+                    Vehicle vehicle = null;
+                    switch (table) {
+                        case "trucks":
+                            vehicle = new Truck(
+                                rs.getInt("weight"),
+                                rs.getString("color"),
+                                rs.getInt("mv_id"),
+                                rs.getString("model"),
+                                rs.getString("make"),
+                                rs.getInt("engine_capacity"),
+                                rs.getString("owner"),
+                                rs.getInt("mileage"),
+                                rs.getInt("passenger_capacity"),
+                                rs.getInt("number_of_wheels"),
+                                rs.getInt("towing_capacity"),
+                                rs.getDouble("load_capacity")
+                            );
+                            break;
+                        case "motorcycles":
+                            vehicle = new Motorcycle(
+                                rs.getInt("weight"),
+                                rs.getString("color"),
+                                rs.getInt("mv_id"),
+                                rs.getString("model"),
+                                rs.getString("make"),
+                                rs.getInt("engine_capacity"),
+                                rs.getString("owner"),
+                                rs.getInt("mileage"),
+                                rs.getBoolean("nice_ride_quality"),
+                                rs.getBoolean("cool_exhaust_sound"),
+                                rs.getBoolean("has_sidecar")
+                            );
+                            break;
+                        case "tractors":
+                            vehicle = new Tractor(
+                                rs.getInt("weight"),
+                                rs.getString("color"),
+                                rs.getInt("mv_id"),
+                                rs.getString("model"),
+                                rs.getString("make"),
+                                rs.getInt("engine_capacity"),
+                                rs.getString("owner"),
+                                rs.getInt("mileage"),
+                                rs.getBoolean("is_four_wheel_drive"),
+                                rs.getBoolean("has_front_loader")
+                            );
+                            break;
+                    }
+                    if (vehicle != null) {
+                        vehicles.add(vehicle);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            
-            pst.close();
-            rs.close();
-        } catch (SQLException sqle) {
-            System.out.println("Select Operation Failed: " + sqle.getMessage());
         }
-        
+        return vehicles;
     }
 
+    
     public void insertOperation(Vehicle vehicle) {
-    try {
-        String query = "INSERT INTO vehicles (id, type, weight, color, model, make, engine_capacity, owner, mileage, passenger_capacity, number_of_wheels, towing_capacity, load_capacity, current_load, four_wheel_drive, front_loader, has_sidecar, cool_exhaust_sound) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement pst = con.prepareStatement(query);
-        pst.setInt(1, vehicle.getMvID());
-        pst.setString(2, vehicle.getClass().getSimpleName());
-        pst.setInt(3, vehicle.getWeight());
-        pst.setString(4, vehicle.getColor());
-        pst.setString(5, vehicle.getModel());
-        pst.setString(6, vehicle.getMake());
-        pst.setInt(7, vehicle.getEngineCapacity());
-        pst.setString(8, vehicle.getOwner());
-        pst.setInt(9, vehicle.getMileage());
+        String table = vehicle.getClass().getSimpleName().toLowerCase() + "s";
 
-        if (vehicle instanceof Truck) {
-            Truck t = (Truck) vehicle;
-            pst.setInt(10, t.getPassengerCapacity());
-            pst.setInt(11, t.getNumberOfWheels());
-            pst.setInt(12, t.getTowingCapacity());
-            pst.setDouble(13, t.getLoadCapacity());
-            pst.setDouble(14, t.getCurrentLoad());
-            pst.setNull(15, java.sql.Types.BOOLEAN);
-            pst.setNull(16, java.sql.Types.BOOLEAN);
-            pst.setNull(17, java.sql.Types.BOOLEAN);
-            pst.setNull(18, java.sql.Types.BOOLEAN);
-        } else if (vehicle instanceof Tractor) {
-            Tractor t = (Tractor) vehicle;
-            pst.setNull(10, java.sql.Types.INTEGER);
-            pst.setNull(11, java.sql.Types.INTEGER);
-            pst.setNull(12, java.sql.Types.INTEGER);
-            pst.setNull(13, java.sql.Types.DOUBLE);
-            pst.setNull(14, java.sql.Types.DOUBLE);
-            pst.setBoolean(15, t.isFourWheelDrive());
-            pst.setBoolean(16, t.hasFrontLoader());
-            pst.setNull(17, java.sql.Types.BOOLEAN);
-            pst.setNull(18, java.sql.Types.BOOLEAN);
-        } else if (vehicle instanceof Motorcycle) {
-            Motorcycle m = (Motorcycle) vehicle;
-            pst.setNull(10, java.sql.Types.INTEGER);
-            pst.setNull(11, java.sql.Types.INTEGER);
-            pst.setNull(12, java.sql.Types.INTEGER);
-            pst.setNull(13, java.sql.Types.DOUBLE);
-            pst.setNull(14, java.sql.Types.DOUBLE);
-            pst.setNull(15, java.sql.Types.BOOLEAN);
-            pst.setNull(16, java.sql.Types.BOOLEAN);
-            pst.setBoolean(17, m.hasSidecar());
-            pst.setBoolean(18, m.hasCoolExhaustSound());
-        }
+        String commonQuery = "INSERT INTO " + table + " (mv_id, weight, color, model, make, " +
+                "engine_capacity, owner, mileage";
 
-        int rowsInserted = pst.executeUpdate();
-        if (rowsInserted > 0) {
-            System.out.println("A new vehicle was inserted successfully into the database!");
-        }
-        pst.close();
-    } catch (SQLException sqle) {
-        sqle.printStackTrace(); // Prints the stack trace for detailed error debugging
-    }
-}
-
-    public void deleteOperation(int id) {
-        try {
-            String query = "DELETE FROM vehicles WHERE id = ?";
-            PreparedStatement pst = con.prepareStatement(query);
-            pst.setInt(1, id);
-            
-            int rowsDeleted = pst.executeUpdate();
-            if (rowsDeleted > 0) {
-                System.out.println("Vehicle with ID " + id + " was deleted successfully!");
-            } else {
-                System.out.println("No vehicle found with ID " + id);
-            }
-            pst.close();
-        } catch (SQLException sqle) {
-            System.out.println("Delete Operation Failed: " + sqle.getMessage());
-        }
-    }
-
-    public void updateOperation(int id, String newOwner, String color) {
-    try {
-        String query = "UPDATE vehicles SET owner = ?, color = ? WHERE id = ?";
-        PreparedStatement pst = con.prepareStatement(query);
-        pst.setString(1, newOwner);
-        pst.setString(2, color);
-        pst.setInt(3, id);
+        // Specific columns for subclasses
+        String specificColumns = "";
+        String specificValues = "";
         
-        int rowsUpdated = pst.executeUpdate();
-        if (rowsUpdated > 0) {
-            System.out.println("Vehicle with ID " + id + " was updated successfully!");
-        } else {
-            System.out.println("No vehicle found with ID " + id);
+        if (vehicle instanceof Truck) {
+            specificColumns = ", passenger_capacity, number_of_wheels, towing_capacity, load_capacity";
+            Truck truck = (Truck) vehicle;
+            specificValues = String.format(", %d, %d, %d, %.2f",
+                truck.getPassengerCapacity(), truck.getNumberOfWheels(), 
+                truck.getTowingCapacity(), truck.getLoadCapacity());
+            
+        } 
+        else if (vehicle instanceof Motorcycle) {
+            specificColumns = ", nice_ride_quality, cool_exhaust_sound, has_sidecar";
+            Motorcycle motorcycle = (Motorcycle) vehicle;
+            specificValues = String.format(", %b, %b, %b",
+                motorcycle.hasNiceRideQuality(), motorcycle.hasCoolExhaustSound(), 
+                motorcycle.hasSidecar());
+        } 
+        else if (vehicle instanceof Tractor) {
+            specificColumns = ", is_four_wheel_drive, has_front_loader";
+            Tractor tractor = (Tractor) vehicle;
+            specificValues = String.format(", %b, %b",
+                tractor.isFourWheelDrive(), tractor.hasFrontLoader());
         }
-        pst.close();
-    } catch (SQLException sqle) {
-        System.out.println("Update Operation Failed: " + sqle.getMessage());
+
+        String query = commonQuery + specificColumns + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?" + specificValues + ")";
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, vehicle.getMvID());
+            pstmt.setInt(2, vehicle.getWeight());
+            pstmt.setString(3, vehicle.getColor());
+            pstmt.setString(4, vehicle.getModel());
+            pstmt.setString(5, vehicle.getMake());
+            pstmt.setInt(6, vehicle.getEngineCapacity());
+            pstmt.setString(7, vehicle.getOwner());
+            pstmt.setInt(8, vehicle.getMileage());
+            pstmt.executeUpdate();
+            
+            
+            System.out.println("Vehicle with ID: " + getMvID + " inserted successfully into the table " + truck);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
+
+    
+    public void updateOperation(int id, String newOwner, String newColor) {
+        String[] tables = {"trucks", "motorcycles", "tractors"};
+        for (String table : tables) {
+            String query = "UPDATE " + table + " SET owner = ?, color = ? WHERE mv_id = ?";
+            try (PreparedStatement pst = con.prepareStatement(query)) {
+                pst.setString(1, newOwner);
+                pst.setString(2, newColor);
+                pst.setInt(3, id);
+                int rowsUpdated = pst.executeUpdate();
+                if (rowsUpdated > 0) {
+                    System.out.println("Vehicle with ID " + id + " was updated successfully in " + table + "!");
+                    return;
+                }
+            } catch (SQLException sqle) {
+                System.out.println("Update Operation Failed for " + table + ": " + sqle.getMessage());
+            }
+        }
+        System.out.println("No vehicle found with ID " + id);
+    }
+
+    
+    public void deleteOperation(String vehicleType, int id) {
+        String[] tables = {"trucks", "motorcycles", "tractors"};
+        for (String table : tables) {
+            String query = "DELETE FROM " + table + " WHERE mv_id = ?";
+            try (PreparedStatement pst = con.prepareStatement(query)) {
+                pst.setInt(1, id);
+                int rowsDeleted = pst.executeUpdate();
+                if (rowsDeleted > 0) {
+                    System.out.println("Vehicle with ID " + id + " was deleted successfully from " + table + "!");
+                    return;
+                }
+            } catch (SQLException sqle) {
+                System.out.println("Delete Operation Failed for " + table + ": " + sqle.getMessage());
+            }
+        }
+        System.out.println("No vehicle found with ID " + id);
+    }
+    
+    
+    
 }

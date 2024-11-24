@@ -17,7 +17,7 @@ public abstract class DBConnection {
         
         // Step 2: Establish connection
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/aooptestdb", "root", "");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/aeroplane_db", "root", "");
             System.out.println("Connection established");
         } catch (SQLException sqle) {
             System.out.println("Could not establish connection: " + sqle.getMessage());

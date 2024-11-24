@@ -1,17 +1,29 @@
 package AOOPClassAssignment1;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.collections.ObservableList;
 
-public class Motorcycle extends MotorVehicle {
+public class Motorcycle extends MotorVehicle implements Serializable  {
 
     private boolean niceRideQuality;
     private boolean coolExhaustSound;
     private boolean hasSidecar;
+    
 
+    @Override
+    public String toString() {
+        return String.format("Motorcycle: %s %s (ID: %d) - Owner: %s, Weight: %d kg, Color: %s, Engine: %d cc, Mileage: %d km, Nice Ride: %s, Cool Exhaust: %s, Sidecar: %s",
+                make, model, mvID, owner, weight, color, engineCapacity, mileage,
+                hasNiceRideQuality() ? "Yes" : "No",
+                hasCoolExhaustSound() ? "Yes" : "No",
+                hasSidecar() ? "Yes" : "No");
+    }
+
+    
     public Motorcycle(int weight, String color, int mvID, String model, String make, int engineCapacity, String owner, int mileage, boolean niceRideQuality, boolean coolExhaustSound, boolean hasSidecar) {
         super(weight, color, mvID, model, make, engineCapacity, owner, mileage);
         this.niceRideQuality = niceRideQuality;

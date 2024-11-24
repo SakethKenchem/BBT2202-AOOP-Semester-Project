@@ -1,6 +1,8 @@
 package AOOPClassAssignment1;
 
-public interface Vehicle {
+import java.io.Serializable;
+
+public interface Vehicle extends Serializable {
     void start();
     void repair();
     void stopEngine();
@@ -21,5 +23,18 @@ public interface Vehicle {
     public String getOwner();
 
     public int getMileage();
-}
 
+    public void setWeight(int parseInt);
+
+    public void setColor(String text);
+
+    public void setModel(String text);
+
+    public void setMake(String text);
+
+    public void setEngineCapacity(int parseInt);
+
+    public void setOwner(String text);
+
+    public void setMileage(int parseInt);
+}

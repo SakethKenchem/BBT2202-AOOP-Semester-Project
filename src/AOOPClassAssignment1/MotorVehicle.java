@@ -1,14 +1,16 @@
 package AOOPClassAssignment1;
 
-public abstract class MotorVehicle implements Vehicle {
-    private int weight;
-    private String color;
-    private final int mvID;
-    private String model;
-    private String make;
-    private int engineCapacity;
-    private String owner;
-    private int mileage;
+import java.io.Serializable;
+
+public abstract class MotorVehicle implements Vehicle, Serializable  {
+    int weight;
+    String color;
+    final int mvID;
+    String model;
+    String make;
+    int engineCapacity;
+    String owner;
+    int mileage;
 
     public MotorVehicle(int weight, String color, int mvID, String model, String make, int engineCapacity, String owner, int mileage) {
         this.weight = weight;

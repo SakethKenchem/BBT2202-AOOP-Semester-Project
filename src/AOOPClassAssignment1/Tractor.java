@@ -1,12 +1,13 @@
 package AOOPClassAssignment1;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.collections.ObservableList;
 
-public class Tractor extends MotorVehicle {
+public class Tractor extends MotorVehicle implements Serializable  {
     private boolean isFourWheelDrive;
     private boolean hasFrontLoader;
 
@@ -14,6 +15,14 @@ public class Tractor extends MotorVehicle {
         super(weight, color, mvID, model, make, engineCapacity, owner, mileage);
         this.isFourWheelDrive = isFourWheelDrive;
         this.hasFrontLoader = hasFrontLoader;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Tractor: %s %s (ID: %d) - Owner: %s, Weight: %d kg, Color: %s, Engine: %d cc, Mileage: %d km, 4WD: %s, Front Loader: %s",
+                make, model, mvID, owner, weight, color, engineCapacity, mileage,
+                isFourWheelDrive() ? "Yes" : "No",
+                hasFrontLoader() ? "Yes" : "No");
     }
 
     @Override

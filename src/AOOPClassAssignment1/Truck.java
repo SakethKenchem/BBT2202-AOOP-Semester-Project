@@ -1,12 +1,13 @@
 package AOOPClassAssignment1;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.collections.ObservableList;
 
-public class Truck extends MotorVehicle {
+public class Truck extends MotorVehicle implements Serializable {
     private int passengerCapacity;
     private int numberOfWheels;
     private int towingCapacity;
@@ -20,6 +21,13 @@ public class Truck extends MotorVehicle {
         this.towingCapacity = towingCapacity;
         this.loadCapacity = loadCapacity;
         this.currentLoad = 0;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Truck: %s %s (ID: %d) - Owner: %s, Weight: %d kg, Color: %s, Engine: %d cc, Mileage: %d km, Passengers: %d, Wheels: %d, Towing: %d kg, Load: %.2f/%.2f kg",
+                make, model, mvID, owner, weight, color, engineCapacity, mileage,
+                passengerCapacity, numberOfWheels, towingCapacity, currentLoad, loadCapacity);
     }
 
     @Override
